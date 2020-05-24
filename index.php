@@ -24,6 +24,32 @@ $container['db'] = function ($c) {
 };
 
 $app->post('/image', function ($request, $response) {
+
+    //GNUPLOT
+    $gnuplotFile = fopen("D:\gnuplot\client\gnuplotFile.p", "w");
+    $imgType = $request->getParam('imgType');
+    $imgFunction = $request->getParam('imgFunction');
+    $imgTitle = $request->getParam('imgTitle');
+    $imgdX = $request->getParam('imgdX');
+    $imgdY = $request->getParam('imgdY');
+
+    //set output 
+    $setOutputImg = "set terminal ".$imgType." size 500,500"."\n";
+    fwrite($gnuplotFile, $setOutputImg);
+    //set output file
+    $setOutputFile = "set output 'D:\gnuplot\client\gnuplot.png'"."\n";
+    fwrite($gnuplotFile, $setOutputFile);
+    //set output title
+    $setOutputTitle = "set title 'Gnuplot Graphic'"."\n";
+    fwrite($gnuplotFile, $setOutputTitle);
+    //plot graphic
+    $setOutputPlot = "plot".$imgdX.$imgdY." ".$imgFunction."\n";
+    fwrite($gnuplotFile, $setOutputPlot);
+
+    fclose($gnuplotFile);
+
+
+    exec("D:\gnuplot\client\gnuplot\bin\gnuplot.exe D:\gnuplot\client\gnuplotFile.p"); 
    
    try{
        $con = $this->db;
@@ -44,10 +70,10 @@ $app->post('/image', function ($request, $response) {
    catch(\Exception $ex){
        return $response->withJson(array('error' => $ex->getMessage()),422);
    }
-   
 });
 
 $app->get('/image/{id}', function ($request,$response) {
+
    try{
        $id     = $request->getAttribute('id');
        $con = $this->db;
@@ -57,10 +83,37 @@ $app->get('/image/{id}', function ($request,$response) {
        ':id' => $id);
        $pre->execute($values);
        $result = $pre->fetch();
+
+       //GNUPLOT
+        $gnuplotFile = fopen("D:\gnuplot\client\gnuplotFile.p", "w");
+        $imgType = $result['imgType'];
+        $imgFunction = $result['imgFunction'];
+        $imgTitle = $result['imgTitle'];
+        $imgdX = $result['imgdX'];
+        $imgdY = $result['imgdY'];
+
+        //set output 
+        $setOutputImg = "set terminal ".$imgType." size 500,500"."\n";
+        fwrite($gnuplotFile, $setOutputImg);
+        //set output file
+        $setOutputFile = "set output 'D:\gnuplot\client\gnuplot.png'"."\n";
+        fwrite($gnuplotFile, $setOutputFile);
+        //set output title
+        $setOutputTitle = "set title 'Gnuplot Graphic'"."\n";
+        fwrite($gnuplotFile, $setOutputTitle);
+        //plot graphic
+        $setOutputPlot = "plot".$imgdX.$imgdY." ".$imgFunction."\n";
+        fwrite($gnuplotFile, $setOutputPlot);
+
+        fclose($gnuplotFile);
+
+
+        exec("D:\gnuplot\client\gnuplot\bin\gnuplot.exe D:\gnuplot\client\gnuplotFile.p");
+
        if($result){
            return $response->withJson(array('status' => 'true','result'=> $result),200);
        }else{
-           return $response->withJson(array('status' => 'User Not Found'),422);
+           return $response->withJson(array('status' => 'Image Not Found'),422);
        }
       
    }
@@ -75,13 +128,41 @@ $app->get('/images', function ($request,$response) {
        $con = $this->db;
        $sql = "SELECT * FROM diagramtable";
        $result = null;
+
+       $count = 0;
        foreach ($con->query($sql) as $row) {
            $result[] = $row;
+
+            $gnuplotFile = fopen("D:\gnuplot\client\gnuplotFile.p", "w");
+            $imgType =  $row['imgType'];
+            $imgFunction = $row['imgFunction'];
+            $imgTitle = $row['imgTitle'];
+            $imgdX = $row['imgdX'];
+            $imgdY = $row['imgdY'];
+            $name = $count."gnuplot.".$imgType;
+            //set output 
+            $setOutputImg = "set terminal ".$imgType." size 500,500"."\n";
+            fwrite($gnuplotFile, $setOutputImg);
+            //set output file
+            $setOutputFile = "set output 'D:/gnuplot/client/$name'"."\n";
+            fwrite($gnuplotFile, $setOutputFile);
+            //set output title
+            $setOutputTitle = "set title 'Gnuplot Graphic'"."\n";
+            fwrite($gnuplotFile, $setOutputTitle);
+            //plot graphic
+            $setOutputPlot = "plot".$imgdX.$imgdY." ".$imgFunction."\n";
+            fwrite($gnuplotFile, $setOutputPlot);
+
+            fclose($gnuplotFile);
+                    
+
+            exec("D:\gnuplot\client\gnuplot\bin\gnuplot.exe D:\gnuplot\client\gnuplotFile.p");
+            $count++;
        }
        if($result){
-           return $response->withJson(array('status' => 'true','result'=>$result),200);
+           return $response->withJson(array('status' => 'true','result'=>$result, $count),200);
        }else{
-           return $response->withJson(array('status' => 'Users Not Found'),422);
+           return $response->withJson(array('status' => 'Images Not Found'),422);
        }
               
    }
