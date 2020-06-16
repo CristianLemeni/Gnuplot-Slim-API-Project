@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: Gnuplot PW
+  version: v1
+paths:
+  /image/:
+    post:
+      tags:
+        - Graph
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Image'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Image'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+  /image/{id}/:
+    get:
+      tags:
+        - Graph
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Image'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+    delete:
+      tags:
+        - Graph
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Image'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Image'            
+    put:
+      tags:
+        - Graph
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Image'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Image'            
+  /images/:
+    get:
+      tags:
+        - Graph
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Image'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+
+components:
+  schemas:
+    Image:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+        imgType:
+          type: string
+        imgFunction:
+          type: string
+        imgTitle:
+          type: string
+        imgdX:
+          type: string
+        imgdY:
+          type: string
+      additionalProperties: false

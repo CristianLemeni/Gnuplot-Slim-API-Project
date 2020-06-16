@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Graphics Generator PW</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+	var loadImages = function(){
+        var count;
+		//GET all images
+		$.ajax({url: "/images", success: function(result){
+		  console.log(result);
+		  showResults(result);
+          count = result[0];
+		}}).done(function(){          
+            var parent = document.getElementById("imgHolder");
+            for(var i = 0; i < count; i++){
+                var img = document.createElement("img");
+                img.src = i + "gnuplot.png";
+                parent.appendChild(img);
+            }
+        });
+	}
+	
+	var showResults = function(result){
+		var tableDIV = document.getElementById("info");
+		tableDIV.style.display = "block";
+		
+		for(var i = 0; i < result.result.length; i++){
+			var tr = document.createElement("tr");
+			
+			var idTd = document.createElement("td");
+			idTd.innerHTML = result.result[i]["id"];
+			
+			var funcTd = document.createElement("td");
+			funcTd.innerHTML = result.result[i]["imgFunction"];
+			
+			var titleTd = document.createElement("td");
+			titleTd.innerHTML = result.result[i]["imgTitle"];
+			
+			var typeTd = document.createElement("td");
+			typeTd.innerHTML = result.result[i]["imgType"];
+			
+			var dxTd = document.createElement("td");
+			dxTd.innerHTML = result.result[i]["imgdX"];
+			
+			var dyTd = document.createElement("td");
+			dyTd.innerHTML = result.result[i]["imgdY"];
+			
+			var table = document.getElementById("table");
+			table.appendChild(tr);
+			tr.appendChild(idTd);
+			tr.appendChild(funcTd);
+			tr.appendChild(titleTd);
+			tr.appendChild(typeTd);
+			tr.appendChild(dxTd);
+			tr.appendChild(dyTd);
+		}
+	}
+  
+	var loadImage = function(){
+	
+		var id = document.getElementById("chartID");
+		//GET single image
+		$.ajax({url: "/image/" + id.value, success: function(result){
+		  console.log(result);
+		  gnuplotImageLoad();
+		  var tableDIV = document.getElementById("info");
+		//	tableDIV.style.display = "block";
+			
+			var tr = document.createElement("tr");
+			
+			var idTd = document.createElement("td");
+			idTd.innerHTML = result.result["id"];
+			
+			var funcTd = document.createElement("td");
+			funcTd.innerHTML = result.result["imgFunction"];
+			
+			var titleTd = document.createElement("td");
+			titleTd.innerHTML = result.result["imgTitle"];
+			
+			var typeTd = document.createElement("td");
+			typeTd.innerHTML = result.result["imgType"];
+			
+			var dxTd = document.createElement("td");
+			dxTd.innerHTML = result.result["imgdX"];
+			
+			var dyTd = document.createElement("td");
+			dyTd.innerHTML = result.result["imgdY"];
+			
+			var table = document.getElementById("table");
+			table.appendChild(tr);
+			tr.appendChild(idTd);
+			tr.appendChild(funcTd);
+			tr.appendChild(titleTd);
+			tr.appendChild(typeTd);
+			tr.appendChild(dxTd);
+			tr.appendChild(dyTd);
+		  
+		}});
+    }
+
+    var createImage = function(){
+        var data = {
+            id: document.getElementById("createId").value,
+            imgFunction: document.getElementById("function").value,
+            imgTitle: document.getElementById("title").value,
+            imgType: document.getElementById("type").value,
+            imgdX: document.getElementById("d_x").value,
+            imgdY: document.getElementById("d_y").value,
+        };
+
+        $.post( "/image", data, function( data ) {
+            console.log(data);
+            gnuplotImageLoad();
+        });
+    }
+
+    var deleteImage = function(){
+        var deleteId = document.getElementById("deleteId").value;
+
+        $.ajax({
+            url: 'http://localhost:8080//image/' + deleteId,
+            type: 'DELETE',
+            data: {}, 
+            contentType:'application/json',  
+            dataType: 'text',               
+            success: function(result) {
+                console.log(result);
+            },
+            error: function(result){
+                console.log(result);
+            }
+        });
+    }
+
+    var updateImage = function(){
+        var updateId = document.getElementById("updateId").value;
+        var data = {
+                id:  updateId,
+                imgType: document.getElementById("updateType").value,
+                imgFunction: document.getElementById("updateFunction").value,
+                imgTitle: document.getElementById("updateTitle").value,
+                imgdX: document.getElementById("updateD_x").value,
+                imgdY: document.getElementById("updateD_y").value
+            }
+        $.ajax({
+            url: 'http://localhost:8080//image/' + updateId,
+            type: 'PUT',
+            data: JSON.stringify(data), 
+            contentType:'application/json',  
+            dataType: 'text',               
+            success: function(result) {
+                console.log(result);
+            },
+            error: function(result){
+                console.log(result);
+            }
+        });
+    }
+
+    var gnuplotImageLoad = function(){
+        var div = document.getElementById("gnuplotImage");
+        div.style.display = "block";
+        var img = document.getElementById("gnuplotId");
+        img.src = "gnuplot.png";
+    }
+</script>
+<style>
+    table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    }
+
+    td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    }
+
+    tr:nth-child(even) {
+    background-color: #dddddd;
+    }
+</style>
+<style>
+    body {font-family: "Lato", sans-serif}
+    .mySlides {display: none}
+</style>
+<body style="background: #e0e0e0">
+
+<!-- Navbar -->
+<div class="w3-top" style="min-height: 100px">
+    <div class="w3-bar w3-black w3-card">
+        <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+        <a data-toggle="modal" data-target="#myModal" class="w3-bar-item w3-button  w3-padding-large">Create Chart</a>
+        <a data-toggle="modal" data-target="#deleteModal" class="w3-bar-item w3-button  w3-padding-large">Delete Chart</a>
+        <a data-toggle="modal" data-target="#updateModal" class="w3-bar-item w3-button  w3-padding-large">Update Chart</a>
+        <a data-toggle="modal" data-target="#loadModal" class="w3-bar-item w3-button  w3-padding-large">Load Chart</a>
+        <a data-toggle="modal" data-target="#loadAllModal" class="w3-bar-item w3-button  w3-padding-large">Load All Charts</a>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Chart</h4>
+            </div>
+            <div class="modal-body">
+                <p>Chart Type</p>
+                <input id="type" type="text" value="png" name="o" />
+            </div>
+            <div class="modal-body">
+                <p>Load Data</p>
+                <input id="function" type="text" value="x*x*sin(x)" name="f" />
+            </div>
+            <div class="modal-body">
+                <p>Chart Options</p>
+                <input id="title" type="text" value="title" name="t" />
+                <input id="d_x" type="text" value="[-1:2]" name="dx" />
+                <input id="d_y" type="text" value="[0:3]" name="dy" />
+            </div>
+            <div class="modal-body">
+                <p>Chart Id</p>
+                <input id="createId" type="number"/>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default" onclick="createImage()">Create</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateModal" role="dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Chart</h4>
+        </div>
+        <div class="modal-body">
+            <p>Chart Type</p>
+            <input id="updateType" type="text" value="png" name="o" />
+        </div>
+        <div class="modal-body">
+            <p>Load Data</p>
+            <input id="updateFunction" type="text" value="x*x*sin(x)" name="f" />
+        </div>
+        <div class="modal-body">
+            <p>Chart Options</p>
+            <input id="updateTitle" type="text" value="title" name="t" />
+            <input id="updateD_x" type="text" value="[-1:2]" name="dx" />
+            <input id="updateD_y" type="text" value="[0:3]" name="dy" />
+        </div>
+        <div class="modal-body">
+            <p>Chart Id</p>
+            <input id="updateId" type="number" />
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-default" onclick="updateImage()">Update Image</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="deleteModal" role="dialog">
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Delete Chart</h4>
+            </div>
+            <div class="modal-body">
+                <p>Chart Id</p>
+                <input id="deleteId" type="number"/>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default" onclick="deleteImage()">Delete</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+</div>
+
+
+<div class="modal fade" id="loadModal" role="dialog">
+   <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Load Chart</h4>
+            </div>
+            <div class="modal-body">
+                <p>Chart ID</p>
+                <input id="chartID" type="number"  name="id" />
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default" onclick="loadImage()">Load</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+</div>
+
+<div class="modal fade" id="loadAllModal" role="dialog">
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Load All Charts</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default" onclick="loadImages()">Load</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+</div>
+
+
+<div id="info" style="display: none; margin-top: 150px">
+	<table id="table">
+  <tr>
+    <th>Id</th>
+    <th>Image Function</th>
+    <th>Image Title</th>
+	<th>Image Type</th>
+	<th>Image dx</th>
+	<th>Image dy</th>
+  </tr>
+
+</table>
+</div>
+
+<div id="gnuplotImage" style="display: none; margin-top: 150px">
+    <img id="gnuplotId" src="">
+</div>
+
+
+<div id="imgHolder" style="margin-top: 150px">
+</div>
+</body>
+</html>
